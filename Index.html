@@ -117,7 +117,7 @@
         }
 
         /* -------------------------------
-           RANDOM CHICKEN CLUCKS (Procedural)
+           RANDOM CHICKEN CLUCKS
         --------------------------------*/
         function randomClucks() {
             if (!audioEnabled) return;
@@ -157,3 +157,46 @@
             osc.type = "sawtooth";
             osc.frequency.setValueAtTime(300, audioCtx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.4);
+
+            gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(1.0, audioCtx.currentTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.45);
+
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        /* -------------------------------
+           COUNTDOWN TIMER
+        --------------------------------*/
+        function updateCountdown() {
+            const targetDate = new Date("2025-11-29T19:00:00-06:00");
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                document.getElementById("countdown").innerHTML =
+                    "It’s Chicken Time! 🍗🔥";
+
+                if (audioEnabled) {
+                    chickenTimeSquawk();
+                }
+
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById("countdown").innerHTML =
+                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
